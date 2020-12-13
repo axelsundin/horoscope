@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mitt horoskop</title>
+    
+    <script defer src="./logic.js"></script>
+    
+    <title>Se ditt horoskop</title>
 </head>
 <body>
     <h4>Skriv in födelsedatum:</h4>
+    <input id="dateInput" type="date">
 
-    <input id="dateInput" type="text" placeholder="YYYY-MM-DD">
-
+    <br>
     <br>
 
     <button id="saveBtn">Spara mitt horoskop</button>
@@ -17,7 +20,9 @@
     <button id="deleteBtn">Radera mitt horoskop</button>
 
     <br>
-    
+
+    <h4>Horoskop:</h4>
     <div id="outputDiv"></div>
+
 </body>
 </html>
