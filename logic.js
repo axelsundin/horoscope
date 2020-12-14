@@ -1,7 +1,8 @@
 window.addEventListener("load", initSite)
 
+let collectedDate
 document.getElementById("saveBtn").addEventListener("click", saveDate)
-document.getElementById("updateBtn").addEventListener("click", updateDate)
+document.getElementById("updateBtn").addEventListener("click", getDate)
 document.getElementById("deleteBtn").addEventListener("click", deleteDate)
 
 function initSite() {
@@ -11,21 +12,36 @@ function initSite() {
 async function saveDate() {
     console.log("clicked save")
 
-    const dateToSave  = document.getElementById("dateInput").value
-
-    if(!dateToSave.length) {
-        console.log("Du måste skriva in ett datum i rätt format")
+    let dateToSave  = document.getElementById("dateInput").value
+    if (!dateToSave.length)
+    {
+        console.log("Fyll i ett datum")
         return
     }
 
+    dateToSave = Array.from(dateToSave)
+    let month = dateToSave.slice(5, 7)
+    let day = dateToSave.slice(8, 10)
+    month = parseInt(month.join(''))
+    day = parseInt(day.join(''))
+    
     const body = new FormData()
-    body.set("date", dateToSave)
+    body.set("month", month)
+    body.set("day", day)
+
+    console.log("month: " + month + ", day: " + day)
 
     const collectedDate = await makeRequest("./requestHandler.php", "POST", body)
     console.log(collectedDate)
-    if(typeof collectedDate === 'string') {
-        document.getElementById("outputDiv").innerText = collectedDate
-    }
+    
+}
+
+// Tillfällig för att testa om jag kan få tillbaka month och date
+async function getDate() {
+
+    const collectedDate = await makeRequest("./requestHandler.php", "GET")
+    console.log(collectedDate)
+
 }
 
 async function updateDate() {
