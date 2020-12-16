@@ -1,69 +1,55 @@
 <?php
 
-function addHoroscope($date) {
-    
-    if(unserialize($date["month"]) == 1 AND unserialize($date["day"]) > 19
-     OR unserialize($date["month"]) == 2 AND unserialize($date["day"]) < 19) {
+try {
 
-        return "Vattumannen";
+    require 'calcHoroscope.php';
 
-    } elseif(unserialize($date["month"]) == 2 AND unserialize($date["day"]) > 18
-    OR unserialize($date["month"]) == 3 AND unserialize($date["day"]) < 20) {
+    session_start();
 
-       return "Fiskarna";
+    if(isset($_SERVER["REQUEST_METHOD"])) {
 
-    } elseif(unserialize($date["month"]) == 3 AND unserialize($date["day"]) > 20
-    OR unserialize($date["month"]) == 4 AND unserialize($date["day"]) < 20) {
+        if($_SERVER["REQUEST_METHOD"] === "POST") {
 
-       return "Väduren";
+            // Checks if date in body is set
+            if(isset($_POST["month"]) && ($_POST["day"])) {
 
-    } elseif(unserialize($date["month"]) == 4 AND unserialize($date["day"]) > 19
-    OR unserialize($date["month"]) == 5 AND unserialize($date["day"]) < 21) {
+                if(!isset($_SESSION["horoscope"])) {
 
-       return "Oxen";
+                    $_SESSION["horoscope"] = calcHoroscope($_POST);
+                    echo json_encode(true);
+                    exit;
 
-    } elseif(unserialize($date["month"]) == 5 AND unserialize($date["day"]) > 20
-    OR unserialize($date["month"]) == 6 AND unserialize($date["day"]) < 22) {
+                } else {
 
-       return "Tvillingarna";
+                    echo json_encode(false);
+                    exit;
 
-    } elseif(unserialize($date["month"]) == 6 AND unserialize($date["day"]) > 21
-    OR unserialize($date["month"]) == 7 AND unserialize($date["day"]) < 23) {
+                }
 
-       return "Kräftan";
+            } else {
 
-    } elseif(unserialize($date["month"]) == 7 AND unserialize($date["day"]) > 22
-    OR unserialize($date["month"]) == 8 AND unserialize($date["day"]) < 23) {
+                // Throws exception if no date was included in the body of the request
+                throw new Exception("No date was found in the request body...", 500);
+            }   
 
-       return "Lejonet";
+        } else {
 
-    } elseif(unserialize($date["month"]) == 8 AND unserialize($date["day"]) > 22
-    OR unserialize($date["month"]) == 9 AND unserialize($date["day"]) < 23) {
+            echo json_encode("BAD REQUEST");
+            exit;
 
-       return "Jungfrun";
-
-    } elseif(unserialize($date["month"]) == 9 AND unserialize($date["day"]) > 22
-    OR unserialize($date["month"]) == 10 AND unserialize($date["day"]) < 23) {
-
-       return "Vågen";
- 
-    } elseif(unserialize($date["month"]) == 10 AND unserialize($date["day"]) > 22
-    OR unserialize($date["month"]) == 11 AND unserialize($date["day"]) < 22) {
-
-       return "Skorpionen";
-
-    } elseif(unserialize($date["month"]) == 11 AND unserialize($date["day"]) > 21
-    OR unserialize($date["month"]) == 12 AND unserialize($date["day"]) < 20) {
-
-       return "Skytten";
-
-    } elseif(unserialize($date["month"]) == 12 AND unserialize($date["day"]) > 21
-    OR unserialize($date["month"]) == 1 AND unserialize($date["day"]) < 20) {
-
-       return "Stenbocken";
-
+        }
+        
     }
     
+} catch(Exception $error) {
+
+    echo json_encode( 
+        array(
+            "Message" => $error -> getMessage(),
+            "Status" => $error -> getCode()
+        ) 
+    );
+
 }
 
 ?>

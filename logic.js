@@ -1,23 +1,16 @@
 window.addEventListener("load", initSite)
 
-let collectedDate
 document.getElementById("saveBtn").addEventListener("click", saveDate)
-document.getElementById("updateBtn").addEventListener("click", getDate)
+document.getElementById("updateBtn").addEventListener("click", updateDate)
 document.getElementById("deleteBtn").addEventListener("click", deleteDate)
 
 function initSite() {
-
+    viewRequest()
 }
 
 async function saveDate() {
-    console.log("clicked save")
 
     let dateToSave  = document.getElementById("dateInput").value
-    if (!dateToSave.length)
-    {
-        console.log("Fyll i ett datum")
-        return
-    }
 
     dateToSave = Array.from(dateToSave)
     let month = dateToSave.slice(5, 7)
@@ -29,49 +22,42 @@ async function saveDate() {
     body.set("month", month)
     body.set("day", day)
 
-    console.log("month: " + month + ", day: " + day)
-
-    const collectedDate = await makeRequest("./requestHandler.php", "POST", body)
+    const collectedDate = await makeRequest("./php/addHoroscope.php", "POST", body)
     console.log(collectedDate)
-    
-}
-
-// Tillfällig för att testa om jag kan få tillbaka month och date
-async function getDate() {
-
-    const collectedDate = await makeRequest("./requestHandler.php", "GET")
-    console.log(collectedDate)
+    viewRequest()
 
 }
 
 async function updateDate() {
-    console.log("clicked update")
 
-    const dateToUpdate  = document.getElementById("dateInput").value
+    let dateToUpdate  = document.getElementById("dateInput").value
 
-    if(!dateToUpdate.length) {
-        console.log("Du måste skriva in ett datum i rätt format")
-        return
-    }
-
+    dateToUpdate = Array.from(dateToUpdate)
+    let month = dateToUpdate.slice(5, 7)
+    let day = dateToUpdate.slice(8, 10)
+    month = parseInt(month.join(''))
+    day = parseInt(day.join(''))
+    
     const body = new FormData()
-    body.set("date", dateToUpdate)
+    body.set("month", month)
+    body.set("day", day)
 
-    const collectedDate = await makeRequest("./requestHandler.php", "POST", body)
+    const collectedDate = await makeRequest("./php/updateHoroscope.php", "POST", body)
     console.log(collectedDate)
-    if(typeof collectedDate === 'string') {
-        document.getElementById("outputDiv").innerText = collectedDate
-    } 
+    viewRequest()
 }
 
 async function deleteDate() {
-    console.log("clicked delete")
 
-    const deleteRequest = await makeRequest("./requestHandler.php", "DELETE")
+    const deleteRequest = await makeRequest("./php/deleteHoroscope.php", "DELETE")
     console.log(deleteRequest)
-    if(deleteRequest) {
-        document.getElementById("outputDiv").innerText = ""
-    } 
+    viewRequest()
+}
+
+async function viewRequest() {
+    const outputDiv = document.getElementById("outputDiv")
+    const viewRequest = await makeRequest("./php/viewHoroscope.php", "GET")
+    outputDiv.innerText = viewRequest
 }
 
 async function makeRequest(path, method, body) {
@@ -89,3 +75,4 @@ async function makeRequest(path, method, body) {
     }
 
 }
+
