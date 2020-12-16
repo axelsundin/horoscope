@@ -3,6 +3,7 @@ window.addEventListener("load", initSite)
 document.getElementById("saveBtn").addEventListener("click", saveDate)
 document.getElementById("updateBtn").addEventListener("click", updateDate)
 document.getElementById("deleteBtn").addEventListener("click", deleteDate)
+let dateToSave  = document.getElementById("dateInput")
 
 function initSite() {
     viewRequest()
@@ -10,13 +11,14 @@ function initSite() {
 
 async function saveDate() {
 
-    let dateToSave  = document.getElementById("dateInput").value
+    dateToSave  = document.getElementById("dateInput").value
 
     dateToSave = Array.from(dateToSave)
     let month = dateToSave.slice(5, 7)
     let day = dateToSave.slice(8, 10)
     month = parseInt(month.join(''))
     day = parseInt(day.join(''))
+    console.log("month: " + month + ", day: " + day)
     
     const body = new FormData()
     body.set("month", month)
@@ -30,13 +32,14 @@ async function saveDate() {
 
 async function updateDate() {
 
-    let dateToUpdate  = document.getElementById("dateInput").value
+    dateToUpdate  = document.getElementById("dateInput").value
 
     dateToUpdate = Array.from(dateToUpdate)
     let month = dateToUpdate.slice(5, 7)
     let day = dateToUpdate.slice(8, 10)
     month = parseInt(month.join(''))
     day = parseInt(day.join(''))
+    console.log("month: " + month + ", day: " + day)
     
     const body = new FormData()
     body.set("month", month)
@@ -51,13 +54,28 @@ async function deleteDate() {
 
     const deleteRequest = await makeRequest("./php/deleteHoroscope.php", "DELETE")
     console.log(deleteRequest)
+    if (deleteRequest)
+    {
+        document.getElementById("saveBtn").disabled = false
+    }
     viewRequest()
 }
 
 async function viewRequest() {
     const outputDiv = document.getElementById("outputDiv")
-    const viewRequest = await makeRequest("./php/viewHoroscope.php", "GET")
-    outputDiv.innerText = viewRequest
+    const viewRequest = await makeRequest("./php/viewHoroscope.php", "GET", undefined)
+    
+    if (!viewRequest) {
+        document.getElementById("updateBtn").disabled = true
+        document.getElementById("deleteBtn").disabled = true
+        outputDiv.innerText = ""
+    } else {
+        outputDiv.innerText = viewRequest
+        document.getElementById("saveBtn").disabled = true
+        document.getElementById("deleteBtn").disabled = false
+        document.getElementById("updateBtn").disabled = false  
+    }
+    dateToSave  = document.getElementById("dateInput").value = null
 }
 
 async function makeRequest(path, method, body) {
@@ -68,8 +86,8 @@ async function makeRequest(path, method, body) {
             body
         })
 
-        return response.json()
-
+        return await response.json()
+        
     } catch(err) {
         return err
     }

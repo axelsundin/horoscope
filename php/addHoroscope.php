@@ -11,7 +11,7 @@ try {
         if($_SERVER["REQUEST_METHOD"] === "POST") {
 
             // Checks if date in body is set
-            if(isset($_POST["month"]) && ($_POST["day"])) {
+            if(isset($_POST["month"]) && ($_POST["day"]) && (is_numeric($_POST["month"]))) {
 
                 if(!isset($_SESSION["horoscope"])) {
 

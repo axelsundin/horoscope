@@ -1,7 +1,5 @@
 <?php
 
-session_start();
-
 function calcHoroscope($date) {
     
    if($date["month"] == 1 AND $date["day"] > 19
@@ -66,7 +64,7 @@ function calcHoroscope($date) {
 
    } else {
 
-      return "";
+      return "Error in calculating horoscope";
 
    }
     
