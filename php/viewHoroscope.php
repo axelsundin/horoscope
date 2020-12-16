@@ -1,7 +1,5 @@
 <?php
 
-try {
-
     session_start();
 
     if(isset($_SERVER["REQUEST_METHOD"])) {
@@ -13,11 +11,9 @@ try {
                 echo json_encode(($_SESSION["horoscope"]));
                 exit;
 
-            } 
-            
-            else {
+            } else {
 
-                echo json_encode("");
+                echo json_encode(false);
                 exit;
 
             }
@@ -25,16 +21,5 @@ try {
         }
         
     }
-    
-} catch(Exception $error) {
-
-    echo json_encode( 
-        array(
-            "Message" => $error -> getMessage(),
-            "Status" => $error -> getCode()
-        ) 
-    );
-
-}
 
 ?>
