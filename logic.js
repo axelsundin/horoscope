@@ -18,16 +18,21 @@ async function saveDate() {
     let day = dateToSave.slice(8, 10)
     month = parseInt(month.join(''))
     day = parseInt(day.join(''))
-    console.log("month: " + month + ", day: " + day)
-    
+
+    if(isNaN(month) && isNaN(day)) {
+        return
+    } 
+
     const body = new FormData()
     body.set("month", month)
     body.set("day", day)
 
     const collectedDate = await makeRequest("./php/addHoroscope.php", "POST", body)
-    console.log(collectedDate)
-    viewRequest()
 
+    if(collectedDate) {
+        viewRequest()
+    }
+    
 }
 
 async function updateDate() {
@@ -39,21 +44,26 @@ async function updateDate() {
     let day = dateToUpdate.slice(8, 10)
     month = parseInt(month.join(''))
     day = parseInt(day.join(''))
-    console.log("month: " + month + ", day: " + day)
+
+    if(isNaN(month) && isNaN(day)) {
+        return
+    } 
     
     const body = new FormData()
     body.set("month", month)
     body.set("day", day)
 
     const collectedDate = await makeRequest("./php/updateHoroscope.php", "POST", body)
-    console.log(collectedDate)
-    viewRequest()
+    
+    if(collectedDate) {
+        viewRequest()
+    }
+
 }
 
 async function deleteDate() {
 
     const deleteRequest = await makeRequest("./php/deleteHoroscope.php", "DELETE")
-    console.log(deleteRequest)
     if (deleteRequest)
     {
         document.getElementById("saveBtn").disabled = false
@@ -62,20 +72,27 @@ async function deleteDate() {
 }
 
 async function viewRequest() {
+
     const outputDiv = document.getElementById("outputDiv")
     const viewRequest = await makeRequest("./php/viewHoroscope.php", "GET", undefined)
     
     if (!viewRequest) {
+
         document.getElementById("updateBtn").disabled = true
         document.getElementById("deleteBtn").disabled = true
         outputDiv.innerText = ""
+
     } else {
+
         outputDiv.innerText = viewRequest
         document.getElementById("saveBtn").disabled = true
         document.getElementById("deleteBtn").disabled = false
-        document.getElementById("updateBtn").disabled = false  
+        document.getElementById("updateBtn").disabled = false
+
     }
+
     dateToSave  = document.getElementById("dateInput").value = null
+
 }
 
 async function makeRequest(path, method, body) {
@@ -89,7 +106,9 @@ async function makeRequest(path, method, body) {
         return await response.json()
         
     } catch(err) {
+
         return err
+
     }
 
 }
