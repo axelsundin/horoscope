@@ -1,5 +1,6 @@
 <?php
 
+//calculates horoscope based on month and day
 function calcHoroscope($date) {
     
    if($date["month"] == 1 AND $date["day"] > 19

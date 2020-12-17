@@ -1,16 +1,22 @@
+// Lets HTML fully load
 window.addEventListener("load", initSite)
 
-document.getElementById("saveBtn").addEventListener("click", saveDate)
-document.getElementById("updateBtn").addEventListener("click", updateDate)
-document.getElementById("deleteBtn").addEventListener("click", deleteDate)
+// Buttons and global variable for date input since it is used in multible functions
+document.getElementById("saveBtn").addEventListener("click", saveHoroscope)
+document.getElementById("updateBtn").addEventListener("click", updateHoroscope)
+document.getElementById("deleteBtn").addEventListener("click", deleteHoroscope)
+
 let dateToSave  = document.getElementById("dateInput")
 
+// Waits for HTML to load and outputs horoscope with viewRequest() if it is saved from earlier session
 function initSite() {
     viewRequest()
 }
 
-async function saveDate() {
-
+// Sends date for calculating and saving horoscope on server and outputs horoscope with viewRequest()
+async function saveHoroscope() {
+    
+    // Separates month and day from date input and stores them in body 
     dateToSave  = document.getElementById("dateInput").value
 
     dateToSave = Array.from(dateToSave)
@@ -19,6 +25,7 @@ async function saveDate() {
     month = parseInt(month.join(''))
     day = parseInt(day.join(''))
 
+    // Exits function i month and day is'nt set in input
     if(isNaN(month) && isNaN(day)) {
         return
     } 
@@ -27,24 +34,30 @@ async function saveDate() {
     body.set("month", month)
     body.set("day", day)
 
+
+    // Sends a POST request to addHoroscope.php with the body (month and day) and awaits response
     const collectedDate = await makeRequest("./php/addHoroscope.php", "POST", body)
 
+    // Runs viewRequest() if addHoroscope.php respondes with true
     if(collectedDate) {
         viewRequest()
     }
     
 }
 
-async function updateDate() {
+// Sends date for calculating and updating horoscope on server and outputs horoscope with viewRequest()
+async function updateHoroscope() {
 
-    dateToUpdate  = document.getElementById("dateInput").value
+    // Separates month and day from date input and stores them in body 
+    dateToSave  = document.getElementById("dateInput").value
 
-    dateToUpdate = Array.from(dateToUpdate)
-    let month = dateToUpdate.slice(5, 7)
-    let day = dateToUpdate.slice(8, 10)
+    dateToSave = Array.from(dateToSave)
+    let month = dateToSave.slice(5, 7)
+    let day = dateToSave.slice(8, 10)
     month = parseInt(month.join(''))
     day = parseInt(day.join(''))
 
+    // Exits function i month and day is'nt set in input
     if(isNaN(month) && isNaN(day)) {
         return
     } 
@@ -53,17 +66,23 @@ async function updateDate() {
     body.set("month", month)
     body.set("day", day)
 
+    // Sends a POST request to updateHoroscope.php with the body (month and day) and awaits response
     const collectedDate = await makeRequest("./php/updateHoroscope.php", "POST", body)
     
+    // Runs viewRequest() if addHoroscope.php respondes with true
     if(collectedDate) {
         viewRequest()
     }
 
 }
 
-async function deleteDate() {
+// Deletes horoscope on server and clears outputDiv with viewRequest()
+async function deleteHoroscope() {
 
+    // Sends DELETE request to deleteHoroscope.php and awaits response
     const deleteRequest = await makeRequest("./php/deleteHoroscope.php", "DELETE")
+    
+    // Activates save button if response is true (horoscope is deleted)
     if (deleteRequest)
     {
         document.getElementById("saveBtn").disabled = false
@@ -71,17 +90,23 @@ async function deleteDate() {
     viewRequest()
 }
 
+// Outputs or clears horoscope based on if its saved on server
 async function viewRequest() {
 
+    // Sets variable for outputDiv
     const outputDiv = document.getElementById("outputDiv")
-    const viewRequest = await makeRequest("./php/viewHoroscope.php", "GET", undefined)
+
+    // Sends GET request to viewHoroscope.php and awaits response
+    const viewRequest = await makeRequest("./php/viewHoroscope.php", "GET")
     
+    // Clears outputDiv and greys out update and delete buttons if viewRequest is false
     if (!viewRequest) {
 
+        outputDiv.innerText = ""
         document.getElementById("updateBtn").disabled = true
         document.getElementById("deleteBtn").disabled = true
-        outputDiv.innerText = ""
 
+    // Outputs horoscope and greys out save button and activates update and delete buttons    
     } else {
 
         outputDiv.innerText = viewRequest
@@ -91,10 +116,12 @@ async function viewRequest() {
 
     }
 
-    dateToSave  = document.getElementById("dateInput").value = null
+    //Clears date input
+    dateToSave = document.getElementById("dateInput").value = null
 
 }
 
+// Using fetch to send REST method and body (if set) to set path. Returns response or error
 async function makeRequest(path, method, body) {
 
     try {
